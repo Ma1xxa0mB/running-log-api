@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard' },
@@ -8,7 +8,7 @@ const navItems = [
   { to: '/account', label: 'Account' },
 ];
 
-function PageLayout({ children }) {
+function PageLayout() {
   return (
     <div className="app-shell">
       <aside className="app-sidebar">
@@ -36,7 +36,9 @@ function PageLayout({ children }) {
       </aside>
 
       <main className="page-content">
-        <div className="page-frame">{children}</div>
+        <div className="page-frame">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

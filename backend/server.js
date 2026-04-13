@@ -7,6 +7,20 @@ dotenv.config();
 
 const app = express();
 const port = 3000;
+const frontendOrigin = 'http://localhost:5173';
+
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', frontendOrigin);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
 
 app.use(express.json()); // Middleware to parse JSON bodies
 

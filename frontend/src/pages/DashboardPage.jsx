@@ -1,3 +1,4 @@
+import ChartDashboard from '../components/ChartDashboard.jsx';
 import EightyTwentyCard from '../components/EightyTwentyCard.jsx';
 import LastRunCard from '../components/LastRunCard.jsx';
 import TrainingLoadCard from '../components/TrainingLoadCard.jsx';
@@ -68,39 +69,7 @@ function DashboardPage() {
             elevation={lastRun.elevation}
             hr={lastRun.hr}
           />
-          <section className="dashboard-card dashboard-card--chart">
-            <h3 className="card-title">Annual Distance</h3>
-            <div className="chart-placeholder">
-              <div className="chart-bars" aria-hidden="true">
-                <span style={{ height: '46%' }} />
-                <span style={{ height: '52%' }} />
-                <span style={{ height: '61%' }} />
-                <span style={{ height: '60%' }} />
-                <span style={{ height: '100%' }} />
-                <span style={{ height: '39%' }} />
-                <span style={{ height: '81%' }} />
-                <span style={{ height: '50%' }} />
-                <span style={{ height: '38%' }} />
-                <span style={{ height: '76%' }} />
-                <span style={{ height: '79%' }} />
-                <span style={{ height: '22%' }} />
-              </div>
-              <div className="chart-axis">
-                <span>Mai</span>
-                <span>Juin</span>
-                <span>Juil.</span>
-                <span>Août</span>
-                <span>Sept.</span>
-                <span>Oct.</span>
-                <span>Nov.</span>
-                <span>Déc.</span>
-                <span>Jan.</span>
-                <span>Fév.</span>
-                <span>Mar.</span>
-                <span>Avr.</span>
-              </div>
-            </div>
-          </section>
+          <ChartDashboard />
         </div>
       </div>
     </section>
