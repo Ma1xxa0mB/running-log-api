@@ -600,46 +600,56 @@ select {
 
 .runs-list {
   display: grid;
-  gap: 14px;
+  gap: 10px;
+  justify-items: start;
 }
 
 .run-list-card {
   display: grid;
-  gap: 12px;
-  padding: 18px;
-  border-radius: var(--radius-card);
-  background: rgba(247, 242, 232, 0.46);
-  color: var(--color-text-strong);
+  grid-template-rows: auto 1fr;
+  gap: 16px;
+  width: min(100%, 620px);
+  min-height: 150px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  color: #fff;
   text-decoration: none;
   transition: transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
 }
 
 .run-list-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(31, 42, 46, 0.08);
-  background: rgba(247, 242, 232, 0.72);
+  box-shadow: 0 12px 24px rgba(31, 42, 46, 0.12);
 }
 
 .run-list-card__top {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+}
+
+.run-list-card__title-row {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
 }
 
 .run-list-card__badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 88px;
-  height: 32px;
-  padding: 0 12px;
-  border-radius: var(--radius-pill);
-  background: var(--color-easy-strong);
+  width: fit-content;
+  min-width: 76px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 7px;
   color: #fff;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  text-transform: capitalize;
 }
 
 .run-list-card__badge--easy {
@@ -667,19 +677,16 @@ select {
 }
 
 .run-list-card__date {
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   font-weight: 600;
-  color: var(--color-text-muted);
+  color: rgba(255, 255, 255, 0.94);
 }
 
-.run-list-card__content {
+.run-list-card__date-group {
   display: grid;
-  gap: 12px;
-}
-
-.run-list-card__meta {
-  display: grid;
-  gap: 4px;
+  gap: 2px;
+  justify-items: end;
+  text-align: right;
 }
 
 .run-list-card__surface,
@@ -688,22 +695,97 @@ select {
 }
 
 .run-list-card__surface {
-  font-size: 0.92rem;
+  font-size: 0.64rem;
   font-weight: 700;
-  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .run-list-card__label {
-  font-size: 0.94rem;
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 8px;
+  border-radius: 7px;
+  background: rgba(54, 33, 120, 0.3);
+  font-size: 0.76rem;
   font-weight: 700;
-  color: var(--color-text-strong);
+  color: #fff;
+  line-height: 1;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .run-list-card__detail {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  max-width: 380px;
+}
+
+.run-list-card__metric {
+  display: grid;
+  gap: 4px;
+}
+
+.run-list-card__metric-label {
+  font-size: 0.62rem;
   font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1;
+}
+
+.run-list-card__metric-value {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.05;
+}
+
+.run-list-card__content {
+  display: grid;
+  align-content: center;
+  min-height: 0;
+}
+
+.run-list-card--easy {
+  background: #9ad28c;
+}
+
+.run-list-card--long {
+  background: #6e79d9;
+}
+
+.run-list-card--tempo {
+  background: #e6a24a;
+}
+
+.run-list-card--vo2max {
+  background: #d48181;
+}
+
+.run-list-card--sprint {
+  background: #ad8ce5;
+}
+
+.run-list-card--muscu {
+  background: #ecd96d;
+  color: #2f2a1f;
+}
+
+.run-list-card--muscu .run-list-card__date,
+.run-list-card--muscu .run-list-card__surface,
+.run-list-card--muscu .run-list-card__label,
+.run-list-card--muscu .run-list-card__metric-label,
+.run-list-card--muscu .run-list-card__metric-value {
+  color: #2f2a1f;
+}
+
+.run-list-card--muscu .run-list-card__label {
+  background: rgba(255, 255, 255, 0.28);
 }
 
 @media (max-width: 720px) {
@@ -748,6 +830,20 @@ select {
   .run-list-card__top {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .run-list-card {
+    width: 100%;
+  }
+
+  .run-list-card__date-group {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .run-list-card__detail {
+    grid-template-columns: 1fr;
+    max-width: none;
   }
 
 }

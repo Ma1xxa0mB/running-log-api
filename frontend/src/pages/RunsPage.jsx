@@ -91,31 +91,47 @@ function RunsPage() {
               <p className="runs-page-feedback">No runs yet for this account.</p>
             ) : (
               runs.map((run) => (
-                <Link key={run.id} to={`/runs/${run.id}`} className="run-list-card">
+                <Link
+                  key={run.id}
+                  to={`/runs/${run.id}`}
+                  className={`run-list-card run-list-card--${run.run_type}`}
+                >
                   <div className="run-list-card__top">
-                    <span
-                      className={`run-list-card__badge run-list-card__badge--${run.run_type}`}
-                    >
-                      {formatRunTypeLabel(run.run_type)}
-                    </span>
-                    <span className="run-list-card__date">{formatRunDate(run.date)}</span>
-                  </div>
-
-                  <div className="run-list-card__content">
-                    <div className="run-list-card__meta">
-                      <p className="run-list-card__surface">
-                        {formatSurfaceLabel(run.surface)}
-                      </p>
+                    <div className="run-list-card__title-row">
+                      <span
+                        className={`run-list-card__badge run-list-card__badge--${run.run_type}`}
+                      >
+                        {formatRunTypeLabel(run.run_type)}
+                      </span>
                       {run.run_label ? (
                         <p className="run-list-card__label">{run.run_label}</p>
                       ) : null}
                     </div>
 
+                    <div className="run-list-card__date-group">
+                      <span className="run-list-card__surface">
+                        {formatSurfaceLabel(run.surface)}
+                      </span>
+                      <span className="run-list-card__date">{formatRunDate(run.date)}</span>
+                    </div>
+                  </div>
+
+                  <div className="run-list-card__content">
                     <div className="run-list-card__detail">
-                      <span>{run.distance_km} km</span>
-                      <span>{run.duration_minutes} min</span>
-                      <span>{run.elevation_m} m+</span>
-                      <span>{run.avg_hr} bpm</span>
+                      <div className="run-list-card__metric">
+                        <span className="run-list-card__metric-label">Distance</span>
+                        <span className="run-list-card__metric-value">{run.distance_km} km</span>
+                      </div>
+                      <div className="run-list-card__metric">
+                        <span className="run-list-card__metric-label">Time</span>
+                        <span className="run-list-card__metric-value">
+                          {run.duration_minutes} min
+                        </span>
+                      </div>
+                      <div className="run-list-card__metric">
+                        <span className="run-list-card__metric-label">Elevation</span>
+                        <span className="run-list-card__metric-value">{run.elevation_m} m</span>
+                      </div>
                     </div>
                   </div>
                 </Link>
