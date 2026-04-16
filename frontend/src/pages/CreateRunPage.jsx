@@ -5,7 +5,7 @@ const initialFormData = {
   date: '',
   run_type: '',
   distance_km: '',
-  duration_minutes: '',
+  duration: '',
   elevation_m: '',
   surface: '',
   run_label: '',
@@ -13,6 +13,11 @@ const initialFormData = {
   avg_hr: '',
   max_hr: '',
   avg_temperature_c: '',
+  zone_1: '',
+  zone_2: '',
+  zone_3: '',
+  zone_4: '',
+  zone_5: '',
 };
 
 function CreateRunPage() {
@@ -98,12 +103,12 @@ function CreateRunPage() {
               </label>
 
               <label className="form-field">
-                <span className="form-label">Duration (minutes)</span>
+                <span className="form-label">Duration</span>
                 <input
-                  type="number"
-                  name="duration_minutes"
-                  placeholder="78"
-                  value={formData.duration_minutes}
+                  type="text"
+                  name="duration"
+                  placeholder="44:31 or 1:34:45"
+                  value={formData.duration}
                   onChange={handleChange}
                 />
               </label>
@@ -185,6 +190,66 @@ function CreateRunPage() {
                   name="avg_temperature_c"
                   placeholder="18"
                   value={formData.avg_temperature_c}
+                  onChange={handleChange}
+                />
+              </label>
+            </div>
+          </section>
+
+          <section className="form-section">
+            <h3 className="form-section-title">Time In Zones</h3>
+            <div className="form-grid form-grid--two">
+              <label className="form-field">
+                <span className="form-label">Zone 1</span>
+                <input
+                  type="text"
+                  name="zone_1"
+                  placeholder="10:00"
+                  value={formData.zone_1}
+                  onChange={handleChange}
+                />
+              </label>
+
+              <label className="form-field">
+                <span className="form-label">Zone 2</span>
+                <input
+                  type="text"
+                  name="zone_2"
+                  placeholder="20:00"
+                  value={formData.zone_2}
+                  onChange={handleChange}
+                />
+              </label>
+
+              <label className="form-field">
+                <span className="form-label">Zone 3</span>
+                <input
+                  type="text"
+                  name="zone_3"
+                  placeholder="08:00"
+                  value={formData.zone_3}
+                  onChange={handleChange}
+                />
+              </label>
+
+              <label className="form-field">
+                <span className="form-label">Zone 4</span>
+                <input
+                  type="text"
+                  name="zone_4"
+                  placeholder="04:00"
+                  value={formData.zone_4}
+                  onChange={handleChange}
+                />
+              </label>
+
+              <label className="form-field">
+                <span className="form-label">Zone 5</span>
+                <input
+                  type="text"
+                  name="zone_5"
+                  placeholder="02:31"
+                  value={formData.zone_5}
                   onChange={handleChange}
                 />
               </label>

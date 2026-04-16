@@ -1,13 +1,13 @@
 import MetricItem from './MetricItem.jsx';
 import RunTypeBadge from './RunTypeBadge.jsx';
 
-function LastRunCard({ type, surface, date, distance, duration, elevation, hr }) {
+function LastRunCard({ type, badgeTone, cardTone, surface, date, distance, duration, elevation, hr }) {
   return (
-    <section className="dashboard-card dashboard-card--easy-run">
+    <section className={`dashboard-card dashboard-card--last-run dashboard-card--${cardTone}-run`}>
       <h3 className="card-title">Last Run</h3>
 
       <div className="last-run-header">
-        <RunTypeBadge type={type} tone="easy-dark" />
+        <RunTypeBadge type={type} tone={badgeTone} />
         <p className="last-run-meta">{surface}</p>
         <p className="last-run-meta">{date}</p>
       </div>

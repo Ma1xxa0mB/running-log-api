@@ -9,6 +9,7 @@ import AccountPage from './pages/AccountPage.jsx';
 import RunDetailPage from './pages/RunDetailPage.jsx';
 import RunsPage from './pages/RunsPage.jsx';
 import SignupPage from './pages/SignupPage.jsx';
+import StatisticsPage from './pages/StatisticsPage.jsx';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/statistics" element={<StatisticsPage />} />
         <Route path="/runs" element={<RunsPage />} />
         <Route path="/runs/new" element={<CreateRunPage />} />
         <Route path="/runs/:id" element={<RunDetailPage />} />

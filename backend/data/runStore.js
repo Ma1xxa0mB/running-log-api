@@ -34,7 +34,7 @@ async function createRun(runData) {
         user_id,
         date,
         distance_km,
-        duration_minutes,
+        duration_seconds,
         elevation_m,
         run_type,
         run_label,
@@ -42,16 +42,21 @@ async function createRun(runData) {
         avg_hr,
         max_hr,
         avg_temperature_c,
-        surface
+        surface,
+        zone_1_seconds,
+        zone_2_seconds,
+        zone_3_seconds,
+        zone_4_seconds,
+        zone_5_seconds
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
       RETURNING *
     `,
     [
       runData.user_id,
       runData.date,
       runData.distance_km,
-      runData.duration_minutes,
+      runData.duration_seconds,
       runData.elevation_m,
       runData.run_type,
       runData.run_label,
@@ -59,7 +64,12 @@ async function createRun(runData) {
       runData.avg_hr,
       runData.max_hr,
       runData.avg_temperature_c,
-      runData.surface
+      runData.surface,
+      runData.zone_1_seconds,
+      runData.zone_2_seconds,
+      runData.zone_3_seconds,
+      runData.zone_4_seconds,
+      runData.zone_5_seconds
     ]
   );
 
@@ -73,7 +83,7 @@ async function updateRun(userId, runId, runData) {
       SET
         date = $1,
         distance_km = $2,
-        duration_minutes = $3,
+        duration_seconds = $3,
         elevation_m = $4,
         run_type = $5,
         run_label = $6,
@@ -82,14 +92,19 @@ async function updateRun(userId, runId, runData) {
         max_hr = $9,
         avg_temperature_c = $10,
         surface = $11,
+        zone_1_seconds = $12,
+        zone_2_seconds = $13,
+        zone_3_seconds = $14,
+        zone_4_seconds = $15,
+        zone_5_seconds = $16,
         updated_at = NOW()
-      WHERE user_id = $12 AND id = $13
+      WHERE user_id = $17 AND id = $18
       RETURNING *
     `,
     [
       runData.date,
       runData.distance_km,
-      runData.duration_minutes,
+      runData.duration_seconds,
       runData.elevation_m,
       runData.run_type,
       runData.run_label,
@@ -98,6 +113,11 @@ async function updateRun(userId, runId, runData) {
       runData.max_hr,
       runData.avg_temperature_c,
       runData.surface,
+      runData.zone_1_seconds,
+      runData.zone_2_seconds,
+      runData.zone_3_seconds,
+      runData.zone_4_seconds,
+      runData.zone_5_seconds,
       userId,
       runId
     ]

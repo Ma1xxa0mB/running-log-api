@@ -24,11 +24,53 @@ function parseInteger(value) {
   return parsedValue;
 }
 
+function parseDurationToSeconds(value) {
+  if (typeof value !== 'string') {
+    return Number.NaN;
+  }
+
+  const trimmedValue = value.trim();
+
+  if (trimmedValue === '') {
+    return Number.NaN;
+  }
+
+  const durationParts = trimmedValue.split(':');
+
+  if (durationParts.length !== 2 && durationParts.length !== 3) {
+    return Number.NaN;
+  }
+
+  const parsedParts = durationParts.map((part) => Number.parseInt(part, 10));
+
+  if (parsedParts.some((part) => Number.isNaN(part) || part < 0)) {
+    return Number.NaN;
+  }
+
+  if (durationParts.length === 2) {
+    const [minutes, seconds] = parsedParts;
+
+    if (seconds >= 60) {
+      return Number.NaN;
+    }
+
+    return minutes * 60 + seconds;
+  }
+
+  const [hours, minutes, seconds] = parsedParts;
+
+  if (minutes >= 60 || seconds >= 60) {
+    return Number.NaN;
+  }
+
+  return hours * 3600 + minutes * 60 + seconds;
+}
+
 function validateRun(body) {
   const {
     date,
     distance_km,
-    duration_minutes,
+    duration,
     elevation_m,
     run_type,
     run_label,
@@ -36,22 +78,32 @@ function validateRun(body) {
     avg_hr,
     max_hr,
     avg_temperature_c,
-    surface
+    surface,
+    zone_1,
+    zone_2,
+    zone_3,
+    zone_4,
+    zone_5
   } = body;
 
   if (
     !date ||
     distance_km === '' ||
-    duration_minutes === '' ||
+    !duration ||
     elevation_m === '' ||
     !run_type ||
     !avg_pace_min_km ||
     avg_hr === '' ||
     max_hr === '' ||
     avg_temperature_c === '' ||
-    !surface
+    !surface ||
+    !zone_1 ||
+    !zone_2 ||
+    !zone_3 ||
+    !zone_4 ||
+    !zone_5
   ) {
-    return 'date, distance_km, duration_minutes, elevation_m, run_type, avg_pace_min_km, avg_hr, max_hr, avg_temperature_c and surface are required';
+    return 'date, distance_km, duration, elevation_m, run_type, avg_pace_min_km, avg_hr, max_hr, avg_temperature_c, surface and zone_1 to zone_5 are required';
   }
 
   if (runTypesRequiringLabel.includes(run_type) && !run_label) {
@@ -59,11 +111,16 @@ function validateRun(body) {
   }
 
   const parsedDistance = parseNumber(distance_km);
-  const parsedDuration = parseInteger(duration_minutes);
+  const parsedDuration = parseDurationToSeconds(duration);
   const parsedElevation = parseInteger(elevation_m);
   const parsedAvgHr = parseInteger(avg_hr);
   const parsedMaxHr = parseInteger(max_hr);
   const parsedAvgTemperature = parseNumber(avg_temperature_c);
+  const parsedZone1 = parseDurationToSeconds(zone_1);
+  const parsedZone2 = parseDurationToSeconds(zone_2);
+  const parsedZone3 = parseDurationToSeconds(zone_3);
+  const parsedZone4 = parseDurationToSeconds(zone_4);
+  const parsedZone5 = parseDurationToSeconds(zone_5);
 
   if (!date) {
     return 'date is required';
@@ -78,7 +135,7 @@ function validateRun(body) {
   }
 
   if (Number.isNaN(parsedDuration) || parsedDuration <= 0) {
-    return 'duration_minutes must be a positive integer';
+    return 'duration must be a valid time in MM:SS or H:MM:SS format';
   }
 
   if (Number.isNaN(parsedElevation) || parsedElevation < 0) {
@@ -113,6 +170,30 @@ function validateRun(body) {
     return 'surface must be one of: outdoor, treadmill';
   }
 
+  if (Number.isNaN(parsedZone1) || parsedZone1 < 0) {
+    return 'zone_1 must be a valid time in MM:SS or H:MM:SS format';
+  }
+
+  if (Number.isNaN(parsedZone2) || parsedZone2 < 0) {
+    return 'zone_2 must be a valid time in MM:SS or H:MM:SS format';
+  }
+
+  if (Number.isNaN(parsedZone3) || parsedZone3 < 0) {
+    return 'zone_3 must be a valid time in MM:SS or H:MM:SS format';
+  }
+
+  if (Number.isNaN(parsedZone4) || parsedZone4 < 0) {
+    return 'zone_4 must be a valid time in MM:SS or H:MM:SS format';
+  }
+
+  if (Number.isNaN(parsedZone5) || parsedZone5 < 0) {
+    return 'zone_5 must be a valid time in MM:SS or H:MM:SS format';
+  }
+
+  if (parsedZone1 + parsedZone2 + parsedZone3 + parsedZone4 + parsedZone5 > parsedDuration) {
+    return 'zone_1 to zone_5 cannot be greater than duration';
+  }
+
   return null;
 }
 
@@ -120,7 +201,7 @@ function buildRunFromBody(body) {
   return {
     date: body.date,
     distance_km: parseNumber(body.distance_km),
-    duration_minutes: parseInteger(body.duration_minutes),
+    duration_seconds: parseDurationToSeconds(body.duration),
     elevation_m: parseInteger(body.elevation_m),
     run_type: body.run_type,
     run_label: body.run_label || null,
@@ -128,7 +209,12 @@ function buildRunFromBody(body) {
     avg_hr: parseInteger(body.avg_hr),
     max_hr: parseInteger(body.max_hr),
     avg_temperature_c: parseNumber(body.avg_temperature_c),
-    surface: body.surface
+    surface: body.surface,
+    zone_1_seconds: parseDurationToSeconds(body.zone_1),
+    zone_2_seconds: parseDurationToSeconds(body.zone_2),
+    zone_3_seconds: parseDurationToSeconds(body.zone_3),
+    zone_4_seconds: parseDurationToSeconds(body.zone_4),
+    zone_5_seconds: parseDurationToSeconds(body.zone_5)
   };
 }
 

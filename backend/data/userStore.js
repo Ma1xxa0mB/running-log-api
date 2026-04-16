@@ -37,11 +37,13 @@ async function updateUserById(userId, userData) {
       UPDATE users
       SET
         username = $1,
-        email = $2
-      WHERE id = $3
+        email = $2,
+        hr_rest = $3,
+        hr_max = $4
+      WHERE id = $5
       RETURNING *
     `,
-    [userData.username, userData.email, userId]
+    [userData.username, userData.email, userData.hr_rest, userData.hr_max, userId]
   );
 
   return result.rows[0] || null;
