@@ -1,4 +1,10 @@
-function EightyTwentyCard({ label, easyPercent, moderatePercent, hardPercent }) {
+function EightyTwentyCard({
+  label,
+  easyPercent,
+  moderatePercent,
+  hardPercent,
+  unclassifiedPercent,
+}) {
   return (
     <section className="dashboard-card">
       <div className="eighty-twenty-header">
@@ -19,6 +25,10 @@ function EightyTwentyCard({ label, easyPercent, moderatePercent, hardPercent }) 
           className="eighty-twenty-segment eighty-twenty-segment--hard"
           style={{ width: hardPercent }}
         />
+        <div
+          className="eighty-twenty-segment eighty-twenty-segment--unclassified"
+          style={{ width: unclassifiedPercent }}
+        />
       </div>
 
       <div className="eighty-twenty-legend">
@@ -30,6 +40,9 @@ function EightyTwentyCard({ label, easyPercent, moderatePercent, hardPercent }) 
         </span>
         <span className="eighty-twenty-tag eighty-twenty-tag--hard">
           Hard {hardPercent}
+        </span>
+        <span className="eighty-twenty-tag eighty-twenty-tag--unclassified">
+          Unclassified {unclassifiedPercent}
         </span>
       </div>
     </section>

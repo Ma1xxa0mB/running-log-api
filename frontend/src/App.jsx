@@ -1,15 +1,20 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import AddActivityPage from './pages/AddActivityPage.jsx';
 import AuthLayout from './components/AuthLayout.jsx';
 import PageLayout from './components/PageLayout.jsx';
 import CreateRunPage from './pages/CreateRunPage.jsx';
+import CreateStrengthPage from './pages/CreateStrengthPage.jsx';
 import CalendarPage from './pages/CalendarPage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
+import EditStrengthPage from './pages/EditStrengthPage.jsx';
+import EditRunPage from './pages/EditRunPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import AccountPage from './pages/AccountPage.jsx';
 import RunDetailPage from './pages/RunDetailPage.jsx';
 import RunsPage from './pages/RunsPage.jsx';
 import SignupPage from './pages/SignupPage.jsx';
 import StatisticsPage from './pages/StatisticsPage.jsx';
+import StrengthDetailPage from './pages/StrengthDetailPage.jsx';
 
 function App() {
   return (
@@ -25,8 +30,14 @@ function App() {
         <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/statistics" element={<StatisticsPage />} />
         <Route path="/runs" element={<RunsPage />} />
-        <Route path="/runs/new" element={<CreateRunPage />} />
+        <Route path="/activities/new" element={<AddActivityPage />} />
+        <Route path="/activities/new/run" element={<CreateRunPage />} />
+        <Route path="/activities/new/strength" element={<CreateStrengthPage />} />
+        <Route path="/runs/new" element={<Navigate to="/activities/new/run" replace />} />
         <Route path="/runs/:id" element={<RunDetailPage />} />
+        <Route path="/runs/:id/edit" element={<EditRunPage />} />
+        <Route path="/strength-sessions/:id" element={<StrengthDetailPage />} />
+        <Route path="/strength-sessions/:id/edit" element={<EditStrengthPage />} />
         <Route path="/account" element={<AccountPage />} />
       </Route>
     </Routes>

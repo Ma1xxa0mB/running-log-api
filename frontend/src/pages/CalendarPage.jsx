@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react';
 import { fetchRuns } from '../api/runsApi.js';
+import { fetchStrengthSessions } from '../api/strengthApi.js';
 import { useEffect } from 'react';
-import { buildRunsByDate } from '../features/calendar/buildRunsByDate.js';
+import { buildActivitiesByDate } from '../features/activities/buildActivitiesByDate.js';
 import { buildMonthGrid } from '../features/calendar/buildMonthGrid.js';
 import { buildCalendarCells } from '../features/calendar/buildCalendarCells.js';
+import { Link } from 'react-router-dom';
 
 const weekdayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -15,7 +17,7 @@ function formatMonthTitle(currentMonthDate) {
 }
 
 function CalendarPage() {
-  const [runs, setRuns] = useState([]);
+  const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentMonthDate, setCurrentMonthDate] = useState(() => {
@@ -24,10 +26,24 @@ function CalendarPage() {
   });
 
   useEffect(() => {
-    async function loadRuns() {
+    async function loadActivities() {
       try {
-        const result = await fetchRuns();
-        setRuns(result);
+        const [runs, strengthSessions] = await Promise.all([
+          fetchRuns(),
+          fetchStrengthSessions(),
+        ]);
+
+        const runActivities = runs.map((run) => ({
+          ...run,
+          activityType: 'run',
+        }));
+
+        const strengthActivities = strengthSessions.map((strengthSession) => ({
+          ...strengthSession,
+          activityType: 'strength',
+        }));
+
+        setActivities([...runActivities, ...strengthActivities]);
       } catch (fetchError) {
         setError(fetchError.message);
       } finally {
@@ -35,10 +51,10 @@ function CalendarPage() {
       }
     }
 
-    loadRuns();
+    loadActivities();
   }, []);
 
-  const runsByDate = useMemo(() => buildRunsByDate(runs), [runs]);
+  const runsByDate = useMemo(() => buildActivitiesByDate(activities), [activities]);
   const monthGrid = useMemo(() => buildMonthGrid(currentMonthDate), [currentMonthDate]);
   const calendarCells = useMemo(
     () => buildCalendarCells(monthGrid, runsByDate),
@@ -124,25 +140,48 @@ function CalendarPage() {
                   </div>
 
                   <div className="calendar-cell__content">
-                    {cell.runs.map((run) => (
-                      <div
-                        key={run.id}
-                        className={`calendar-run-card calendar-run-card--${run.runType}`}
-                      >
-                        <div className="calendar-run-card__top">
-                          <span className={`run-list-card__badge run-list-card__badge--${run.runType}`}>
-                            {run.runTypeLabel}
-                          </span>
-                        </div>
-                        <div className="calendar-run-card__body">
-                          <span className="calendar-run-card__surface">{run.surfaceLabel}</span>
-                          <div className="calendar-run-card__metrics">
-                            <span>{run.distance}</span>
-                            <span>{run.duration}</span>
+                    {cell.runs.map((run) => {
+                      const cardContent = (
+                        <>
+                          <div className="calendar-run-card__top">
+                            <span className={`run-list-card__badge run-list-card__badge--${run.runType}`}>
+                              {run.runTypeLabel}
+                            </span>
                           </div>
-                        </div>
-                      </div>
-                    ))}
+                          <div className="calendar-run-card__body">
+                            {run.surfaceLabel ? (
+                              <span className="calendar-run-card__surface">{run.surfaceLabel}</span>
+                            ) : null}
+                            <div className="calendar-run-card__metrics">
+                              {run.distance ? <span>{run.distance}</span> : null}
+                              <span>{run.duration}</span>
+                            </div>
+                          </div>
+                        </>
+                      );
+
+                      if (run.activityType === 'strength') {
+                        return (
+                          <Link
+                            key={`strength-${run.id}`}
+                            to={`/strength-sessions/${run.id}`}
+                            className={`calendar-run-card calendar-run-card--${run.runType}`}
+                          >
+                            {cardContent}
+                          </Link>
+                        );
+                      }
+
+                      return (
+                        <Link
+                          key={run.id}
+                          to={`/runs/${run.id}`}
+                          className={`calendar-run-card calendar-run-card--${run.runType}`}
+                        >
+                          {cardContent}
+                        </Link>
+                      );
+                    })}
                   </div>
                 </article>
               ))}

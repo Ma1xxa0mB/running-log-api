@@ -38,7 +38,7 @@ function ChartDashboard({ chartData }) {
               labelStyle={{ color: '#1f2a2e', fontWeight: 700 }}
               formatter={(value) => [`${Number(value).toFixed(2)} km`, 'Distance']}
             />
-            <Bar dataKey="km" fill="#92A996" radius={[10, 10, 0, 0]} />
+            <Bar dataKey="km" fill="var(--color-chart-bar)" radius={[10, 10, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

@@ -56,7 +56,7 @@ function StatisticsPage() {
     return (
       <section className="page-card">
         <div className="statistics-page-card">
-          <p className="runs-page-feedback">Loading statistics...</p>
+          <p className="runs-page-feedback">Loading analysis...</p>
         </div>
       </section>
     );
@@ -77,7 +77,7 @@ function StatisticsPage() {
       <section className="page-card">
         <div className="statistics-page-card">
           <div className="form-page-header">
-            <h2>Statistics</h2>
+            <h2>Analysis</h2>
             <p className="form-page-description">
               Add your resting HR and max HR in Account before building the training-load graph.
             </p>
@@ -92,7 +92,7 @@ function StatisticsPage() {
   return (
     <section className="page-card">
       <div className="statistics-page-card">
-        <h2>Statistics</h2>
+        <h2>Analysis</h2>
 
         {chartData.length === 0 ? (
           <p className="runs-page-feedback">No chart data yet for this account.</p>

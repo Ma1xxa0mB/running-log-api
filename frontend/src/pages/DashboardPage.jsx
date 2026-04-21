@@ -145,17 +145,18 @@ function DashboardPage() {
             easyPercent={intensityBalance.easyPercent}
             moderatePercent={intensityBalance.moderatePercent}
             hardPercent={intensityBalance.hardPercent}
+            unclassifiedPercent={intensityBalance.unclassifiedPercent}
           />
           <TrainingLoadCard
             fatigueValue={trainingLoad.fatigueValue}
             formValue={trainingLoad.formValue}
             fitnessValue={trainingLoad.fitnessValue}
-            loadValue={trainingLoad.loadValue}
           />
         </div>
 
         <div className="dashboard-grid__bottom">
           <LastRunCard
+            id={lastRun.id}
             type={lastRun.type}
             badgeTone={lastRun.badgeTone}
             cardTone={lastRun.cardTone}
@@ -165,6 +166,8 @@ function DashboardPage() {
             duration={lastRun.duration}
             elevation={lastRun.elevation}
             hr={lastRun.hr}
+            avgPace={lastRun.avgPace}
+            maxHr={lastRun.maxHr}
           />
           <ChartDashboard chartData={annualDistance} />
         </div>

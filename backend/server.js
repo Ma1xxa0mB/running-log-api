@@ -26,9 +26,11 @@ app.use(express.json()); // Middleware to parse JSON bodies
 
 // Import and use the runs router for all routes starting with /runs
 const runsRouter = require('./routes/runs');
+const strengthSessionsRouter = require('./routes/strengthSessions');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
 app.use('/runs', runsRouter);  
+app.use('/strength-sessions', strengthSessionsRouter);
 app.use('/users', usersRouter);
 app.use('/', authRouter);
 

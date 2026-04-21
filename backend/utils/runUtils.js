@@ -1,6 +1,14 @@
-const allowedRunTypes = ['easy', 'long', 'tempo', 'vo2max', 'sprint', 'muscu'];
+const allowedRunTypes = ['easy', 'long', 'tempo', 'vo2max', 'sprint'];
 const allowedSurfaces = ['outdoor', 'treadmill'];
-const runTypesRequiringLabel = ['tempo', 'vo2max', 'sprint', 'muscu'];
+const runTypesRequiringLabel = ['tempo', 'vo2max', 'sprint'];
+
+function normalizeText(value) {
+  if (typeof value !== 'string') {
+    return '';
+  }
+
+  return value.trim();
+}
 
 function parseNumber(value) {
   if (typeof value === 'number') {
@@ -86,6 +94,9 @@ function validateRun(body) {
     zone_5
   } = body;
 
+  const normalizedRunLabel = normalizeText(run_label);
+  const normalizedAvgPace = normalizeText(avg_pace_min_km);
+
   if (
     !date ||
     distance_km === '' ||
@@ -106,7 +117,7 @@ function validateRun(body) {
     return 'date, distance_km, duration, elevation_m, run_type, avg_pace_min_km, avg_hr, max_hr, avg_temperature_c, surface and zone_1 to zone_5 are required';
   }
 
-  if (runTypesRequiringLabel.includes(run_type) && !run_label) {
+  if (runTypesRequiringLabel.includes(run_type) && normalizedRunLabel === '') {
     return 'run_label is required for qualitative run types';
   }
 
@@ -143,10 +154,10 @@ function validateRun(body) {
   }
 
   if (!allowedRunTypes.includes(run_type)) {
-    return 'run_type must be one of: easy, long, tempo, vo2max, sprint, muscu';
+    return 'run_type must be one of: easy, long, tempo, vo2max, sprint';
   }
 
-  if (typeof avg_pace_min_km !== 'string' || avg_pace_min_km.trim() === '') {
+  if (normalizedAvgPace === '') {
     return 'avg_pace_min_km is required';
   }
 
@@ -198,14 +209,17 @@ function validateRun(body) {
 }
 
 function buildRunFromBody(body) {
+  const normalizedRunLabel = normalizeText(body.run_label);
+  const normalizedAvgPace = normalizeText(body.avg_pace_min_km);
+
   return {
     date: body.date,
     distance_km: parseNumber(body.distance_km),
     duration_seconds: parseDurationToSeconds(body.duration),
     elevation_m: parseInteger(body.elevation_m),
     run_type: body.run_type,
-    run_label: body.run_label || null,
-    avg_pace_min_km: body.avg_pace_min_km,
+    run_label: normalizedRunLabel === '' ? null : normalizedRunLabel,
+    avg_pace_min_km: normalizedAvgPace,
     avg_hr: parseInteger(body.avg_hr),
     max_hr: parseInteger(body.max_hr),
     avg_temperature_c: parseNumber(body.avg_temperature_c),

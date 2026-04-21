@@ -1,8 +1,22 @@
+import { Link } from 'react-router-dom';
 import MetricItem from './MetricItem.jsx';
 import RunTypeBadge from './RunTypeBadge.jsx';
 
-function LastRunCard({ type, badgeTone, cardTone, surface, date, distance, duration, elevation, hr }) {
-  return (
+function LastRunCard({
+  id,
+  type,
+  badgeTone,
+  cardTone,
+  surface,
+  date,
+  distance,
+  duration,
+  elevation,
+  hr,
+  avgPace,
+  maxHr,
+}) {
+  const cardContent = (
     <section className={`dashboard-card dashboard-card--last-run dashboard-card--${cardTone}-run`}>
       <h3 className="card-title">Last Run</h3>
 
@@ -17,8 +31,20 @@ function LastRunCard({ type, badgeTone, cardTone, surface, date, distance, durat
         <MetricItem label="Time" value={duration} />
         <MetricItem label="Elevation" value={elevation} />
         <MetricItem label="HR" value={hr} />
+        <MetricItem label="Avg pace" value={avgPace} />
+        <MetricItem label="Max HR" value={maxHr} />
       </div>
     </section>
+  );
+
+  if (!id) {
+    return cardContent;
+  }
+
+  return (
+    <Link to={`/runs/${id}`} className="dashboard-card-link">
+      {cardContent}
+    </Link>
   );
 }
 

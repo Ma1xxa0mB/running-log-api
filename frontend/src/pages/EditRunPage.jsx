@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { API_BASE_URL } from '../api/client.js';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { fetchRunById, updateRunById } from '../api/runsApi.js';
 
 const initialFormData = {
   date: '',
@@ -21,8 +21,70 @@ const initialFormData = {
   zone_5: '',
 };
 
-function CreateRunPage() {
+function formatSecondsForForm(totalSeconds) {
+  const seconds = Number(totalSeconds);
+
+  if (!Number.isFinite(seconds) || seconds <= 0) {
+    return '';
+  }
+
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+
+  const paddedMinutes = String(minutes).padStart(hours > 0 ? 2 : 1, '0');
+  const paddedSeconds = String(remainingSeconds).padStart(2, '0');
+
+  if (hours > 0) {
+    return `${hours}:${paddedMinutes}:${paddedSeconds}`;
+  }
+
+  return `${minutes}:${paddedSeconds}`;
+}
+
+function buildFormDataFromRun(run) {
+  return {
+    date: run.date || '',
+    run_type: run.run_type || '',
+    distance_km: run.distance_km?.toString() || '',
+    duration: formatSecondsForForm(run.duration_seconds),
+    elevation_m: run.elevation_m?.toString() || '',
+    surface: run.surface || '',
+    run_label: run.run_label || '',
+    avg_pace_min_km: run.avg_pace_min_km || '',
+    avg_hr: run.avg_hr?.toString() || '',
+    max_hr: run.max_hr?.toString() || '',
+    avg_temperature_c: run.avg_temperature_c?.toString() || '',
+    zone_1: formatSecondsForForm(run.zone_1_seconds),
+    zone_2: formatSecondsForForm(run.zone_2_seconds),
+    zone_3: formatSecondsForForm(run.zone_3_seconds),
+    zone_4: formatSecondsForForm(run.zone_4_seconds),
+    zone_5: formatSecondsForForm(run.zone_5_seconds),
+  };
+}
+
+function EditRunPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState(initialFormData);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    async function loadRun() {
+      try {
+        const run = await fetchRunById(id);
+        setFormData(buildFormDataFromRun(run));
+      } catch (fetchError) {
+        setError(fetchError.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadRun();
+  }, [id]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -35,28 +97,52 @@ function CreateRunPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    setSaving(true);
+    setError('');
 
-    const response = await fetch(`${API_BASE_URL}/runs`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(formData),
-    });
+    try {
+      const updatedRun = await updateRunById(id, formData);
+      console.log(updatedRun);
+      navigate(`/runs/${id}`);
+    } catch (submitError) {
+      setError(submitError.message);
+    } finally {
+      setSaving(false);
+    }
+  }
 
-    const result = await response.json();
+  if (loading) {
+    return (
+      <section className="page-card">
+        <div className="form-page-card">
+          <p className="runs-page-feedback">Loading run...</p>
+        </div>
+      </section>
+    );
+  }
 
-    console.log(result);
+  if (error && !formData.date) {
+    return (
+      <section className="page-card">
+        <div className="form-page-card">
+          <p className="form-feedback form-feedback--error">{error}</p>
+          <div className="form-actions">
+            <Link to="/runs" className="form-button form-button--secondary">
+              Back to activities
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   return (
     <section className="page-card">
       <div className="form-page-card">
         <div className="form-page-header">
-          <h2>Add Run</h2>
+          <h2>Edit Run</h2>
           <p className="form-page-description">
-            Manual entry for one running session. Garmin import will come later.
+            Update an existing session with corrected or more complete data.
           </p>
         </div>
 
@@ -138,7 +224,7 @@ function CreateRunPage() {
                   <option value="treadmill">Treadmill</option>
                 </select>
               </label>
-           
+
               <label className="form-field">
                 <span className="form-label">Session Detail</span>
                 <input
@@ -149,7 +235,7 @@ function CreateRunPage() {
                   onChange={handleChange}
                 />
               </label>
-        
+
               <label className="form-field">
                 <span className="form-label">Avg Pace (min/km)</span>
                 <input
@@ -256,13 +342,19 @@ function CreateRunPage() {
             </div>
           </section>
 
+          {error ? <p className="form-feedback form-feedback--error">{error}</p> : null}
+
           <div className="form-actions form-actions--split">
-            <Link to="/activities/new" className="form-button form-button--secondary">
-              Back to activity choice
+            <Link to={`/runs/${id}`} className="form-button form-button--secondary">
+              Back to run
             </Link>
 
-            <button type="submit" className="form-button form-button--primary">
-              Save Run
+            <button
+              type="submit"
+              className="form-button form-button--primary"
+              disabled={saving}
+            >
+              {saving ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>
@@ -271,4 +363,4 @@ function CreateRunPage() {
   );
 }
 
-export default CreateRunPage;
+export default EditRunPage;

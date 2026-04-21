@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchRuns } from '../api/runsApi.js';
-import { buildVisibleRuns } from '../features/runs/buildVisibleRuns.js';
+import { fetchStrengthSessions } from '../api/strengthApi.js';
+import { buildVisibleActivities } from '../features/activities/buildVisibleActivities.js';
 import { formatDuration } from '../utils/time.js';
 
 const initialFilters = {
@@ -14,12 +15,12 @@ const initialFilters = {
 
 function formatRunTypeLabel(runType) {
   const labels = {
+    strength: 'Strength',
     easy: 'Easy',
     long: 'Long',
     tempo: 'Tempo',
     vo2max: 'VO2 Max',
     sprint: 'Sprint',
-    muscu: 'Muscu',
   };
 
   return labels[runType] || runType;
@@ -27,6 +28,7 @@ function formatRunTypeLabel(runType) {
 
 function formatSurfaceLabel(surface) {
   const labels = {
+    strength: 'Strength',
     outdoor: 'Outdoor',
     treadmill: 'Treadmill',
   };
@@ -54,8 +56,27 @@ function RunsPage() {
   useEffect(() => {
     async function loadRuns() {
       try {
-        const result = await fetchRuns();
-        setRuns(result);
+        const [runResults, strengthResults] = await Promise.all([
+          fetchRuns(),
+          fetchStrengthSessions(),
+        ]);
+
+        const runActivities = runResults.map((run) => ({
+          ...run,
+          activityType: 'run',
+        }));
+
+        const strengthActivities = strengthResults.map((strengthSession) => ({
+          ...strengthSession,
+          activityType: 'strength',
+          run_type: 'strength',
+          surface: '',
+          run_label: null,
+          distance_km: null,
+          elevation_m: null,
+        }));
+
+        setRuns([...runActivities, ...strengthActivities]);
       } catch (fetchError) {
         setError(fetchError.message);
       } finally {
@@ -75,14 +96,14 @@ function RunsPage() {
     }));
   }
 
-  const visibleRuns = buildVisibleRuns(runs, filters);
+  const visibleRuns = buildVisibleActivities(runs, filters);
 
   return (
     <section className="page-card">
       <div className="runs-page-card">
         <div className="runs-page-header">
           <div>
-            <h2>Runs</h2>
+            <h2>Activities</h2>
           </div>
         </div>
 
@@ -101,13 +122,13 @@ function RunsPage() {
             <label className="form-field">
               <span className="form-label">Run Type</span>
               <select name="runTypeFilter" value={filters.runTypeFilter} onChange={handleFilterChange}>
-                <option value="all">All runs</option>
+                <option value="all">All activities</option>
+                <option value="strength">Strength</option>
                 <option value="easy">Easy</option>
                 <option value="long">Long</option>
                 <option value="tempo">Tempo</option>
                 <option value="vo2max">VO2 Max</option>
                 <option value="sprint">Sprint</option>
-                <option value="muscu">Muscu</option>
               </select>
             </label>
 
@@ -155,53 +176,89 @@ function RunsPage() {
         {!loading && !error ? (
           <div className="runs-list">
             {visibleRuns.length === 0 ? (
-              <p className="runs-page-feedback">No runs match the current filters.</p>
+              <p className="runs-page-feedback">No activities match the current filters.</p>
             ) : (
               visibleRuns.map((run) => (
-                <Link
-                  key={run.id}
-                  to={`/runs/${run.id}`}
-                  className={`run-list-card run-list-card--${run.run_type}`}
-                >
-                  <div className="run-list-card__top">
-                    <div className="run-list-card__title-row">
-                      <span
-                        className={`run-list-card__badge run-list-card__badge--${run.run_type}`}
-                      >
-                        {formatRunTypeLabel(run.run_type)}
-                      </span>
-                      {run.run_label ? (
-                        <p className="run-list-card__label">{run.run_label}</p>
-                      ) : null}
-                    </div>
-
-                    <div className="run-list-card__date-group">
-                      <span className="run-list-card__surface">
-                        {formatSurfaceLabel(run.surface)}
-                      </span>
-                      <span className="run-list-card__date">{formatRunDate(run.date)}</span>
-                    </div>
-                  </div>
-
-                  <div className="run-list-card__content">
-                    <div className="run-list-card__detail">
-                      <div className="run-list-card__metric">
-                        <span className="run-list-card__metric-label">Distance</span>
-                        <span className="run-list-card__metric-value">{run.distance_km} km</span>
-                      </div>
-                      <div className="run-list-card__metric">
-                        <span className="run-list-card__metric-label">Time</span>
-                        <span className="run-list-card__metric-value">
-                          {formatDuration(run.duration_seconds)}
+                run.activityType === 'strength' ? (
+                  <Link
+                    key={`strength-${run.id}`}
+                    to={`/strength-sessions/${run.id}`}
+                    className="run-list-card run-list-card--strength"
+                  >
+                    <div className="run-list-card__top">
+                      <div className="run-list-card__title-row">
+                        <span className="run-list-card__badge run-list-card__badge--strength">
+                          {formatRunTypeLabel(run.run_type)}
                         </span>
                       </div>
-                      <div className="run-list-card__metric">
-                        <span className="run-list-card__metric-label">Elevation</span>
-                        <span className="run-list-card__metric-value">{run.elevation_m} m</span>
+
+                      <div className="run-list-card__date-group">
+                        {run.surface ? (
+                          <span className="run-list-card__surface">
+                            {formatSurfaceLabel(run.surface)}
+                          </span>
+                        ) : null}
+                        <span className="run-list-card__date">{formatRunDate(run.date)}</span>
                       </div>
                     </div>
-                  </div>
-                </Link>
+
+                    <div className="run-list-card__content">
+                      <div className="run-list-card__detail run-list-card__detail--strength">
+                        <div className="run-list-card__metric">
+                          <span className="run-list-card__metric-label">Time</span>
+                          <span className="run-list-card__metric-value">
+                            {formatDuration(run.duration_seconds)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ) : (
+                  <Link
+                    key={run.id}
+                    to={`/runs/${run.id}`}
+                    className={`run-list-card run-list-card--${run.run_type}`}
+                  >
+                    <div className="run-list-card__top">
+                      <div className="run-list-card__title-row">
+                        <span
+                          className={`run-list-card__badge run-list-card__badge--${run.run_type}`}
+                        >
+                          {formatRunTypeLabel(run.run_type)}
+                        </span>
+                        {run.run_label ? (
+                          <p className="run-list-card__label">{run.run_label}</p>
+                        ) : null}
+                      </div>
+
+                      <div className="run-list-card__date-group">
+                        <span className="run-list-card__surface">
+                          {formatSurfaceLabel(run.surface)}
+                        </span>
+                        <span className="run-list-card__date">{formatRunDate(run.date)}</span>
+                      </div>
+                    </div>
+
+                    <div className="run-list-card__content">
+                      <div className="run-list-card__detail">
+                        <div className="run-list-card__metric">
+                          <span className="run-list-card__metric-label">Distance</span>
+                          <span className="run-list-card__metric-value">{run.distance_km} km</span>
+                        </div>
+                        <div className="run-list-card__metric">
+                          <span className="run-list-card__metric-label">Time</span>
+                          <span className="run-list-card__metric-value">
+                            {formatDuration(run.duration_seconds)}
+                          </span>
+                        </div>
+                        <div className="run-list-card__metric">
+                          <span className="run-list-card__metric-label">Elevation</span>
+                          <span className="run-list-card__metric-value">{run.elevation_m} m</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                )
               ))
             )}
           </div>

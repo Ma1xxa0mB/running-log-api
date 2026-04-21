@@ -7,7 +7,6 @@ function formatRunTypeLabel(runType) {
     tempo: 'Tempo',
     vo2max: 'VO2 Max',
     sprint: 'Sprint',
-    muscu: 'Muscu',
   };
 
   return labels[runType] || runType;
@@ -29,14 +28,29 @@ export function buildCalendarCells(visibleDates, runsByDate) {
     return {
       ...visibleDate,
       hasRuns: dayRuns.length > 0,
-      runs: dayRuns.map((run) => ({
-        id: run.id,
-        runType: run.run_type,
-        runTypeLabel: formatRunTypeLabel(run.run_type),
-        surfaceLabel: formatSurfaceLabel(run.surface),
-        distance: `${Number(run.distance_km).toFixed(2)} km`,
-        duration: formatDuration(run.duration_seconds),
-      })),
+      runs: dayRuns.map((run) => {
+        if (run.activityType === 'strength') {
+          return {
+            id: run.id,
+            activityType: 'strength',
+            runType: 'strength',
+            runTypeLabel: 'Strength',
+            surfaceLabel: '',
+            distance: '',
+            duration: formatDuration(run.duration_seconds),
+          };
+        }
+
+        return {
+          id: run.id,
+          activityType: 'run',
+          runType: run.run_type,
+          runTypeLabel: formatRunTypeLabel(run.run_type),
+          surfaceLabel: formatSurfaceLabel(run.surface),
+          distance: `${Number(run.distance_km).toFixed(2)} km`,
+          duration: formatDuration(run.duration_seconds),
+        };
+      }),
     };
   });
 }

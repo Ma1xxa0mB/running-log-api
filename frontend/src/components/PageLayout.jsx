@@ -5,9 +5,9 @@ import { fetchCurrentUser } from '../api/userApi.js';
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', end: true },
   { to: '/calendar', label: 'Calendar', end: true },
-  { to: '/statistics', label: 'Statistics', end: true },
-  { to: '/runs', label: 'Runs', end: true },
-  { to: '/runs/new', label: 'Add Run', end: true },
+  { to: '/statistics', label: 'Analysis', end: true },
+  { to: '/runs', label: 'Activities', end: true },
+  { to: '/activities/new', label: 'Add Activity', end: true },
   { to: '/account', label: 'Account', end: true },
 ];
 

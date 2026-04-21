@@ -8,7 +8,6 @@ function formatLastRunType(runType) {
     tempo: 'Tempo',
     vo2max: 'VO2 Max',
     sprint: 'Sprint',
-    muscu: 'Muscu',
   };
 
   return labels[runType] || runType;
@@ -36,6 +35,7 @@ function formatLastRunDate(rawDate) {
 export function buildLastRunFromRuns(runs) {
   if (runs.length === 0) {
     return {
+      id: null,
       type: '--',
       badgeTone: 'easy-dark',
       cardTone: 'easy',
@@ -45,6 +45,8 @@ export function buildLastRunFromRuns(runs) {
       duration: '--',
       elevation: '--',
       hr: '--',
+      avgPace: '--',
+      maxHr: '--',
     };
   }
 
@@ -62,6 +64,7 @@ export function buildLastRunFromRuns(runs) {
   const latestRun = sortedRuns[0];
 
   return {
+    id: latestRun.id,
     type: formatLastRunType(latestRun.run_type),
     badgeTone: `${latestRun.run_type}-dark`,
     cardTone: latestRun.run_type,
@@ -71,5 +74,7 @@ export function buildLastRunFromRuns(runs) {
     duration: formatDuration(latestRun.duration_seconds),
     elevation: `${latestRun.elevation_m} m`,
     hr: latestRun.avg_hr ? `${latestRun.avg_hr} bpm` : '--',
+    avgPace: latestRun.avg_pace_min_km || '--',
+    maxHr: latestRun.max_hr ? `${latestRun.max_hr} bpm` : '--',
   };
 }

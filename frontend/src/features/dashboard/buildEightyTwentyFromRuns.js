@@ -55,13 +55,22 @@ export function buildEightyTwentyFromRuns(runs) {
       easyPercent: '0%',
       moderatePercent: '0%',
       hardPercent: '0%',
+      unclassifiedPercent: '0%',
     };
   }
 
+  const easyPercentValue = (easySeconds / totalSeconds) * 100;
+  const moderatePercentValue = (moderateSeconds / totalSeconds) * 100;
+  const hardPercentValue = (hardSeconds / totalSeconds) * 100;
+  const classifiedPercentValue =
+    easyPercentValue + moderatePercentValue + hardPercentValue;
+  const unclassifiedPercentValue = Math.max(0, 100 - classifiedPercentValue);
+
   return {
     label: 'Last 7 days',
-    easyPercent: formatPercent((easySeconds / totalSeconds) * 100),
-    moderatePercent: formatPercent((moderateSeconds / totalSeconds) * 100),
-    hardPercent: formatPercent((hardSeconds / totalSeconds) * 100),
+    easyPercent: formatPercent(easyPercentValue),
+    moderatePercent: formatPercent(moderatePercentValue),
+    hardPercent: formatPercent(hardPercentValue),
+    unclassifiedPercent: formatPercent(unclassifiedPercentValue),
   };
 }
